@@ -11,15 +11,15 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String nameCustomer;
     private String chatId;
     private String phoneNumber;
 
     public Customer() {
     }
 
-    public Customer(String name, String chatId, String phoneNumber) {
-        this.name = name;
+    public Customer(String nameCustomer, String chatId, String phoneNumber) {
+        this.nameCustomer = nameCustomer;
         this.chatId = chatId;
         this.phoneNumber = phoneNumber;
     }
@@ -28,12 +28,12 @@ public class Customer {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getNameCustomer() {
+        return nameCustomer;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNameCustomer(String name) {
+        this.nameCustomer = nameCustomer;
     }
 
     public String getChatId() {
@@ -57,11 +57,11 @@ public class Customer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Customer customer = (Customer) o;
-        return Objects.equals(id, customer.id) && Objects.equals(name, customer.name) && Objects.equals(chatId, customer.chatId) && Objects.equals(phoneNumber, customer.phoneNumber);
+        return Objects.equals(id, customer.id) && Objects.equals(nameCustomer, customer.nameCustomer) && Objects.equals(chatId, customer.chatId) && Objects.equals(phoneNumber, customer.phoneNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, chatId, phoneNumber);
+        return Objects.hash(id, nameCustomer, chatId, phoneNumber);
     }
 }

@@ -12,7 +12,7 @@ public class Shelter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String nameShelter;
     private String address;
     private String info;
     private byte[] map;
@@ -20,8 +20,8 @@ public class Shelter {
     public Shelter() {
     }
 
-    public Shelter(String name, String address, String info, byte[] map) {
-        this.name = name;
+    public Shelter(String nameShelter, String address, String info, byte[] map) {
+        this.nameShelter = nameShelter;
         this.address = address;
         this.info = info;
         this.map = map;
@@ -32,11 +32,11 @@ public class Shelter {
     }
 
     public String getName() {
-        return name;
+        return nameShelter;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.nameShelter = nameShelter;
     }
 
     public String getAddress() {
@@ -68,12 +68,12 @@ public class Shelter {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Shelter shelter = (Shelter) o;
-        return Objects.equals(id, shelter.id) && Objects.equals(name, shelter.name) && Objects.equals(address, shelter.address) && Objects.equals(info, shelter.info) && Arrays.equals(map, shelter.map);
+        return Objects.equals(id, shelter.id) && Objects.equals(nameShelter, shelter.nameShelter) && Objects.equals(address, shelter.address) && Objects.equals(info, shelter.info) && Arrays.equals(map, shelter.map);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, name, address, info);
+        int result = Objects.hash(id, nameShelter, address, info);
         result = 31 * result + Arrays.hashCode(map);
         return result;
     }
