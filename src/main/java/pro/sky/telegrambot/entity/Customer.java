@@ -32,7 +32,7 @@ public class Customer {
         return nameCustomer;
     }
 
-    public void setNameCustomer(String name) {
+    public void setNameCustomer(String nameCustomer) {
         this.nameCustomer = nameCustomer;
     }
 
