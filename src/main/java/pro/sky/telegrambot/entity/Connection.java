@@ -18,7 +18,6 @@ public class Connection {
 
     public Connection() {
     }
-
     public Connection(Long petId, Long chatId, LocalDateTime dateTime) {
         this.petId = petId;
         this.chatId = chatId;
