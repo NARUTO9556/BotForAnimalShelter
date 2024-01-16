@@ -17,12 +17,12 @@ public class VolunteerServiceImpl implements VolunteerService {
     }
 
     @Override
-    public Volunteer updateVolunteer(Volunteer updatedVolunteer) {
+    public Volunteer updateVolunteer(Long id, Volunteer updatedVolunteer) {
         return null;
     }
 
     @Override
-    public void deleteCustomer(long id) {
+    public void deleteVolunteer(long id) {
 
     }
 

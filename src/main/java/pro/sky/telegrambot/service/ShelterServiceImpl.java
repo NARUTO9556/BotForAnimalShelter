@@ -17,7 +17,7 @@ public class ShelterServiceImpl implements ShelterService {
     }
 
     @Override
-    public Shelter updateShelter(Shelter updatedShelter) {
+    public Shelter updateShelter(Long id, Shelter updatedShelter) {
         return null;
     }
 

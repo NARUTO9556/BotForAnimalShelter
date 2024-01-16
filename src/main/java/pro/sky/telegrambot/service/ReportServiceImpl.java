@@ -17,7 +17,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public Report updateReport(Report updatedReport) {
+    public Report updateReport(Long id, Report updatedReport) {
         return null;
     }
 

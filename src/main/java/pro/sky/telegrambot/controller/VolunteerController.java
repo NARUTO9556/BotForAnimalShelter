@@ -106,7 +106,7 @@ public class VolunteerController {
             )
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Volunteer> deleteVolunteer(@Parameter(description = "ID удаляемого волонтера") @PathVariable Long id) {
+    public ResponseEntity<Void> deleteVolunteer(@Parameter(description = "ID удаляемого волонтера") @PathVariable Long id) {
         volunteerService.deleteVolunteer(id);
         logger.info("Волонтер удален");
         return ResponseEntity.ok().build();

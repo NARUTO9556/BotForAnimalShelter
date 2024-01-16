@@ -17,7 +17,7 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Pet updatePet(Pet updatedPet) {
+    public Pet updatePet(Long id, Pet updatedPet) {
         return null;
     }
 
