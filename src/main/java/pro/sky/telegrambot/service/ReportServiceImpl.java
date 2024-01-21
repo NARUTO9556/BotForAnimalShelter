@@ -37,7 +37,7 @@ public class ReportServiceImpl implements ReportService {
         Report report = new Report();
         report.setChatId(chatId);
         report.setTextReport(textReport);
-        report.setDateTime(dateReport.truncatedTo(ChronoUnit.MINUTES));
+        report.setDateReport(dateReport.truncatedTo(ChronoUnit.MINUTES));
         reportRepository.save(report);
     }
 
