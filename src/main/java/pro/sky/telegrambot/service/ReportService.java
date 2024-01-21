@@ -3,12 +3,12 @@ package pro.sky.telegrambot.service;
 
 import pro.sky.telegrambot.entity.Report;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReportService {
-    Report createReport(Report report);
+    void createReport(long chatId, String textReport, LocalDateTime dateReport);
     Report findReportById(long id);
-    Report updateReport(Long id, Report updatedReport);
-    void deleteCustomer(long id);
+    void deleteReport(long id);
     List<Report> findAllReports();
 }

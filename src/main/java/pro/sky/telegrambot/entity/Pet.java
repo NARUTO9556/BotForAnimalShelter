@@ -4,32 +4,64 @@ import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Класс содержит данные о питомце
+ */
 @Entity
 public class Pet {
+    /**
+     * идентификатор записи, primary key
+     */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
+
+    /**
+     * имя животного
+     */
     private String petName;
+
+    /**
+     * возраст животного
+     */
     private Integer age;
+
+    /**
+     * фотография животного
+     */
     private byte[] photo;
+
+    /**
+     * вид животного
+     */
     private String kindOfAnimal;
+
+    /**
+     * порода животного
+     */
     private String animalBreed;
+
+    /**
+     * id приюта за которым закреплено животное
+     */
     private Long shelterId;
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+
+    /**
+     * id владельца животного
+     */
+    private Long ownerId;
+
+
+    // второй вариант вместо private Long ownerId:
+    // @ManyToOne
+    //@JoinColumn(name = "customer_id")
+    //private Customer customer;
+
 
     public Pet() {
     }
 
-    public Pet(String petName, Integer age, byte[] photo, String kindOfAnimal, String animalBreed, Long shelterId, Customer customer) {
-        this.petName = petName;
-        this.age = age;
-        this.photo = photo;
-        this.kindOfAnimal = kindOfAnimal;
-        this.animalBreed = animalBreed;
-        this.shelterId = shelterId;
-        this.customer = customer;
+    public Pet(Long id1, String petName1, Integer age1, Object o, String kindOfAnimal1, String animalBreed1, Long shelterId1, Object o1) {
     }
 
     public Long getId() {
@@ -84,12 +116,12 @@ public class Pet {
         this.shelterId = shelterId;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Long getOwnerId() {
+        return ownerId;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
     }
 
     @Override
@@ -97,12 +129,12 @@ public class Pet {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Pet pet = (Pet) o;
-        return Objects.equals(id, pet.id) && Objects.equals(petName, pet.petName) && Objects.equals(age, pet.age) && Arrays.equals(photo, pet.photo) && Objects.equals(kindOfAnimal, pet.kindOfAnimal) && Objects.equals(animalBreed, pet.animalBreed) && Objects.equals(shelterId, pet.shelterId) && Objects.equals(customer, pet.customer);
+        return Objects.equals(id, pet.id) && Objects.equals(petName, pet.petName) && Objects.equals(age, pet.age) && Arrays.equals(photo, pet.photo) && Objects.equals(kindOfAnimal, pet.kindOfAnimal) && Objects.equals(animalBreed, pet.animalBreed) && Objects.equals(shelterId, pet.shelterId) && Objects.equals(ownerId, pet.ownerId);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, petName, age, kindOfAnimal, animalBreed, shelterId, customer);
+        int result = Objects.hash(id, petName, age, kindOfAnimal, animalBreed, shelterId, ownerId);
         result = 31 * result + Arrays.hashCode(photo);
         return result;
     }

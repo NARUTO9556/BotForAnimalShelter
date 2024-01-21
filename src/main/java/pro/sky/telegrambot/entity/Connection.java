@@ -7,22 +7,31 @@ import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Класс, соответствующий таблице, в которой устанавливается взаимосвязь между питомцами и усыновителями
+ */
 @Entity
 public class Connection {
+    /**
+     * идентификатор, primary key
+     */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
+    /**
+     * идентификатор питомца
+     */
     private Long petId;
+    /**
+     * id чата - идентификатор усыновителя
+     */
     private Long chatId;
+    /**
+     * дата усыновления
+     */
     private LocalDateTime dateTime;
-
     public Connection() {
-    }
 
-    public Connection(Long petId, Long chatId, LocalDateTime dateTime) {
-        this.petId = petId;
-        this.chatId = chatId;
-        this.dateTime = dateTime;
     }
 
     public Long getId() {
@@ -56,13 +65,13 @@ public class Connection {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Connection)) return false;
         Connection that = (Connection) o;
-        return Objects.equals(id, that.id) && Objects.equals(petId, that.petId) && Objects.equals(chatId, that.chatId) && Objects.equals(dateTime, that.dateTime);
+        return Objects.equals(getPetId(), that.getPetId()) && Objects.equals(getChatId(), that.getChatId()) && Objects.equals(getDateTime(), that.getDateTime());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, petId, chatId, dateTime);
+        return Objects.hash(getPetId(), getChatId(), getDateTime());
     }
 }

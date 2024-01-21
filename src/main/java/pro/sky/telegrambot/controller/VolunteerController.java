@@ -1,13 +1,13 @@
 package pro.sky.telegrambot.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,8 @@ import pro.sky.telegrambot.service.VolunteerService;
 import java.util.List;
 
 /**
- * Контроллер сервиса приютов.
+ * Класс для обработки запросов от клиента и возвращения результатов,
+ * работает с сущностью {@link VolunteerService}.
  */
 @RestController
 @RequestMapping("/volunteer")
@@ -29,104 +30,133 @@ public class VolunteerController {
         this.volunteerService = volunteerService;
     }
 
-    /**
-     * Эндпоинт для добавления волонтера.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Добавление нового волонтера",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+    @Operation(
+            summary = "Создание волонтера",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Данные создаваемого волонтера." +
+                            "id переданный в теле будет игнорироваться, будет присвоен следующий id из БД. " +
+                            "Все поля кроме id обязательны.",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = Volunteer.class)
                     )
-            )
-    })
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Данные созданного волонтера",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Volunteer.class)
+                            )
+
+                    )
+            }
+    )
     @PostMapping
-    public Volunteer createVolunteer(@Parameter(description = "Все параметры добавляемого волонтера") @RequestBody Volunteer volunteer) {
-        logger.info("Волонтер добавлен");
-        return volunteerService.createVolunteer(volunteer);
+    public ResponseEntity<Volunteer> createVolunteer(@RequestBody Volunteer volunteer) {
+        logger.info("Добавление данных о волонтере");
+        Volunteer createdVolunteer = volunteerService.createVolunteer(volunteer);
+        return ResponseEntity.ok(createdVolunteer);
     }
 
-    /**
-     * Эндпоинт для получения волонтера.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Получение информации о волонтере по ID",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Volunteer.class)
+    @Operation(
+            summary = "Поиск волонтера по id.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Информация о найденном волонтере",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Volunteer.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Волонтер с данным id не найден"
                     )
-            )
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<Volunteer> findVolunteerById(@Parameter(description = "ID волонтера") @PathVariable Long id) {
-        Volunteer volunteer = volunteerService.findVolunteerById(id);
+            }
+    )
+    @GetMapping("{volunteerId}")
+    public ResponseEntity<Volunteer> findVolunteer(
+            @Parameter(description = "Идентификатор волонтера", example = "1")
+            @PathVariable long volunteerId) {
+        logger.info("Поиск данных о волонтере");
+        Volunteer volunteer = volunteerService.findVolunteerById(volunteerId);
         if (volunteer == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.notFound().build();
         }
-        logger.info("Волонтер найден");
         return ResponseEntity.ok(volunteer);
     }
 
-    /**
-     * Эндпоинт для обновления данных волонтера.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Изменение данных волонтера",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+    @Operation(
+            summary = "Изменение данных волонтера.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Данные о волонтере с изменениями. Все поля обязательны.",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = Volunteer.class)
                     )
-            )
-    })
-    @PutMapping("/updateVolunteer/{id}")
-    public ResponseEntity<Volunteer> updateVolunteer(@Parameter(description = "ID изменяемого волонтера") @PathVariable Long id,
-                                         @Parameter(description = "Новые параметры волонтера") @RequestBody Volunteer volunteer) {
-        Volunteer updatedVolunteer = volunteerService.updateVolunteer(id, volunteer);
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Измененные данные о волонтере",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Volunteer.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Волонтер с данным id не найден"
+                    )
+            }
+    )
+    @PutMapping
+    public ResponseEntity<Volunteer> updateVolunteer(@RequestBody Volunteer volunteer) {
+        logger.info("Изменение данных о волонтере");
+        Volunteer updatedVolunteer = volunteerService.updateVolunteer(volunteer);
         if (updatedVolunteer == null) {
-            return ResponseEntity.badRequest().build();
-        } else {
-            logger.info("Данные волонтера обновлены");
-            return ResponseEntity.ok(updatedVolunteer);
+            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.ok(updatedVolunteer);
     }
 
-    /**
-     * Эндпоинт для удаления волонтера.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Удаление волонтера",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Volunteer.class)
+    @Operation(
+            summary = "Удаление волонтера по id.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Волонтер успешно удален"
                     )
-            )
-    })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteVolunteer(@Parameter(description = "ID удаляемого волонтера") @PathVariable Long id) {
-        volunteerService.deleteVolunteer(id);
-        logger.info("Волонтер удален");
+            }
+    )
+    @DeleteMapping("{volunteerId}")
+    public ResponseEntity<Volunteer> deleteVolunteer(
+            @Parameter(description = "id удаляемого волонтера")
+            @PathVariable long volunteerId) {
+        logger.info("Удаление данных о волонтере");
+        volunteerService.deleteVolunteer(volunteerId);
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * Эндпоинт для вывода всех волонтеров.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Список всех волонтеров",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Volunteer.class)
+    @Operation(
+            summary = "Получить список всех волонтеров",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Список всех волонтеров",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    array = @ArraySchema(schema = @Schema(implementation = Volunteer.class))
+                            )
                     )
-            )
-    })
-    @GetMapping
-    public List<Volunteer> allVolunteers() {
-        logger.info("Список всех волонтеров");
-        return volunteerService.findAllVolunteers();
+            }
+    )
+    @GetMapping("/all")
+    public ResponseEntity<List<Volunteer>> findAllVolunteers() {
+        logger.info("Вывод всех данных о волонтерах");
+        return ResponseEntity.ok(volunteerService.findAllVolunteers());
     }
 }

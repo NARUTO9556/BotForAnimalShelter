@@ -1,13 +1,13 @@
 package pro.sky.telegrambot.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,116 +17,144 @@ import pro.sky.telegrambot.service.PetService;
 import java.util.List;
 
 /**
- * Контроллер сервиса домашних животных.
+ * Класс для обработки запросов от клиента и возвращения результатов,
+ * работает с сущностью {@link PetService}.
  */
 @RestController
 @RequestMapping("/pet")
 public class PetController {
     private final PetService petService;
     private final Logger logger = LoggerFactory.getLogger(CustomerController.class);
-
     public PetController(PetService petService) {
         this.petService = petService;
     }
 
-    /**
-     * Эндпоинт для добавления домашнего животного.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Добавление нового домашнего животного",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+    @Operation(
+            summary = "Создание питомца",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Данные создаваемого питомца. " +
+                            "id переданный в теле будет игнорироваться, будет присвоен следующий id из БД. " +
+                            "Обязательные поля: pet_name, age, kind_of_animal,animal_breed, shelter_id",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = Pet.class)
                     )
-            )
-    })
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "питомец успешно создан",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Pet.class)
+                            )
+                    )
+            }
+    )
     @PostMapping
-    public Pet createPet(@Parameter(description = "Все параметры добавляемого домашнего животного") @RequestBody Pet pet) {
+    public ResponseEntity<Pet> createPet(@RequestBody Pet pet) {
         logger.info("Домашнее животное добавлено");
-        return petService.createPet(pet);
+        return ResponseEntity.ok(petService.createPet(pet));
     }
 
-    /**
-     * Эндпоинт для получения домашнего животного.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Получение информации о домашнем животном по ID",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Pet.class)
+    @Operation(
+            summary = "Найти питомца по id",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Данные о питомце",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Pet.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Питомец с таким id не найден"
                     )
-            )
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<Pet> findPetById(@Parameter(description = "ID домашнего животного") @PathVariable Long id) {
-        Pet pet = petService.findPetById(id);
-        if (pet == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+            }
+    )
+    @GetMapping("{petId}")
+    public ResponseEntity<Pet> findPet(
+            @Parameter(description = "id питомца которого нужно найти", example = "1")
+            @PathVariable Long petId) {
         logger.info("Домашнее животное найден");
+        Pet pet = petService.findPetById(petId);
+        if (pet == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(pet);
     }
 
-    /**
-     * Эндпоинт для обновления данных домашнего животного.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Изменение данных домашнего животного",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+    @Operation(
+            summary = "Изменить данные о питомце",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Данные о питомце с изменениями. " +
+                            "Обязательные поля: pet_name, age, kind_of_animal,animal_breed, shelter_id",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = Pet.class)
                     )
-            )
-    })
-    @PutMapping("/updatePet/{id}")
-    public ResponseEntity<Pet> updatePet(@Parameter(description = "ID изменяемого домашнего животного") @PathVariable Long id,
-                                                   @Parameter(description = "Новые параметры домашнего животного") @RequestBody Pet pet) {
-        Pet updatedPet = petService.updatePet(id, pet);
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Данные о питомце с изменениями",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Pet.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Питомец с таким id не найден"
+                    )
+            }
+    )
+    @PutMapping
+    public ResponseEntity<Pet> updatePet(@RequestBody Pet pet) {
+        logger.info("Данные домашнего животного обновлены");
+        Pet updatedPet = petService.updatePet(pet);
         if (updatedPet == null) {
-            return ResponseEntity.badRequest().build();
-        } else {
-            logger.info("Данные домашнего животного обновлены");
-            return ResponseEntity.ok(updatedPet);
+            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.ok(updatedPet);
     }
 
-    /**
-     * Эндпоинт для удаления домашнего животного.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Удаление домашнего животного",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Pet.class)
+    @Operation(
+            summary = "Удалить питомца по его id",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Питомец успешно удален"
                     )
-            )
-    })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Pet> deletePet(@Parameter(description = "ID удаляемого домашнего животного") @PathVariable Long id) {
-        petService.deletePet(id);
-        logger.info("Домашнее животное удалено");
+            }
+    )
+    @DeleteMapping("{petId}")
+    public ResponseEntity<Pet> deletePet(
+            @Parameter(description = "id питомца которого нужно удалить")
+            @PathVariable Long petId) {
+        logger.info("Данные домашнего животного удалены");
+        petService.deletePet(petId);
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * Эндпоинт для вывода всех домашних животных.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Список всех домашних животных",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Pet.class)
+    @Operation(
+            summary = "Найти всех питомцев",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Получен список всех питомцев",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    array = @ArraySchema(schema = @Schema(implementation = Pet.class))
+                            )
                     )
-            )
-    })
-    @GetMapping
-    public List<Pet> allPets() {
+            }
+    )
+    @GetMapping("/findAll")
+    public ResponseEntity<List<Pet>> findAllPets() {
         logger.info("Список всех домашних животных");
-        return petService.findAllPet();
+        return ResponseEntity.ok(petService.findAllPet());
     }
 }

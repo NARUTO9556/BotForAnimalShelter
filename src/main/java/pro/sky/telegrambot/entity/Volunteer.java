@@ -6,34 +6,49 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.Objects;
 
+/**
+ * Класс с данными о волонтере
+ */
 @Entity
 public class Volunteer {
+    /**
+     * идентификатор записи, primary key
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nameVolunteer;
+
+    /**
+     * имя волонтера
+     */
+    private String name;
+
+    /**
+     * идентификатор чата волонтера в Telegram
+     */
     private String chatId;
+
+    /**
+     * номер телефона волонтера
+     */
     private String phoneNumber;
 
     public Volunteer() {
     }
 
-    public Volunteer(String nameVolunteer, String chatId, String phoneNumber) {
-        this.nameVolunteer = nameVolunteer;
-        this.chatId = chatId;
-        this.phoneNumber = phoneNumber;
+    public Volunteer(long idTest, String nameTest, Long chatIdTest, String phoneNumberTest) {
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getNameVolunteer() {
-        return nameVolunteer;
+    public String getName() {
+        return name;
     }
 
-    public void setNameVolunteer(String name) {
-        this.nameVolunteer = nameVolunteer;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getChatId() {
@@ -57,11 +72,11 @@ public class Volunteer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Volunteer volunteer = (Volunteer) o;
-        return Objects.equals(id, volunteer.id) && Objects.equals(nameVolunteer, volunteer.nameVolunteer) && Objects.equals(chatId, volunteer.chatId) && Objects.equals(phoneNumber, volunteer.phoneNumber);
+        return Objects.equals(id, volunteer.id) && Objects.equals(name, volunteer.name) && Objects.equals(chatId, volunteer.chatId) && Objects.equals(phoneNumber, volunteer.phoneNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nameVolunteer, chatId, phoneNumber);
+        return Objects.hash(id, name, chatId, phoneNumber);
     }
 }

@@ -2,40 +2,57 @@ package pro.sky.telegrambot.entity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Класс с данными об отчете о животном, который отправляют владельцы животного
+ */
 @Entity
 public class Report {
+    /**
+     * идентификатор записи, primary key
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
+    /**
+     * идентификатор чата хозяина животного, отправившего отчет
+     */
     private Long chatId;
+    /**
+     * текст отчета
+     */
     private String textReport;
+    /**
+     * дата отправки отчета
+     */
     private LocalDateTime dateReport;
+
+    /**
+     * путь к фото
+     */
     private String filePath;
-    private Long fileSize;
+    /**
+     * размер фото
+     */
+    private long fileSize;
+    /**
+     * тип данных у фото
+     */
     private String mediaType;
+    /**
+     * сам файл фото - массив байтов
+     */
     private byte[] photo;
+
     @ManyToOne
     @JoinColumn(name = "pet_id")
+    /**
+     * id питомца
+     */
     private Pet pet;
 
-    public Report() {
-    }
-
-    public Report(Long chatId, String textReport, LocalDateTime dateTime, String filePath, Long fileSize, String mediaType, byte[] photo, Pet pet) {
-        this.chatId = chatId;
-        this.textReport = textReport;
-        this.dateReport = dateReport;
-        this.filePath = filePath;
-        this.fileSize = fileSize;
-        this.mediaType = mediaType;
-        this.photo = photo;
-        this.pet = pet;
-    }
-
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
@@ -51,16 +68,16 @@ public class Report {
         return textReport;
     }
 
-    public void setTextReport(String textReport) {
-        this.textReport = textReport;
+    public void setTextReport(String petReport) {
+        this.textReport = petReport;
     }
 
-    public LocalDateTime getDateTime() {
+    public LocalDateTime getDateReport() {
         return dateReport;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateReport = dateReport;
+    public void setDateReport(LocalDateTime date) {
+        this.dateReport = date;
     }
 
     public String getFilePath() {
@@ -71,11 +88,11 @@ public class Report {
         this.filePath = filePath;
     }
 
-    public Long getFileSize() {
+    public long getFileSize() {
         return fileSize;
     }
 
-    public void setFileSize(Long fileSize) {
+    public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
     }
 
@@ -106,15 +123,13 @@ public class Report {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Report)) return false;
         Report report = (Report) o;
-        return Objects.equals(id, report.id) && Objects.equals(chatId, report.chatId) && Objects.equals(textReport, report.textReport) && Objects.equals(dateReport, report.dateReport) && Objects.equals(filePath, report.filePath) && Objects.equals(fileSize, report.fileSize) && Objects.equals(mediaType, report.mediaType) && Arrays.equals(photo, report.photo) && Objects.equals(pet, report.pet);
+        return getId() == report.getId();
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, chatId, textReport, dateReport, filePath, fileSize, mediaType, pet);
-        result = 31 * result + Arrays.hashCode(photo);
-        return result;
+        return Objects.hash(getId());
     }
 }

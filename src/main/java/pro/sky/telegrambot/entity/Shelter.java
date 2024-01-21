@@ -7,24 +7,42 @@ import javax.persistence.Id;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Класс содержит информацию о приюте
+ */
 @Entity
 public class Shelter {
+    /**
+     * идентификатор записи, primary key
+     */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
-    private String nameShelter;
+
+    /**
+     * Название приюта
+     */
+    private String name;
+
+    /**
+     * Адрес приюта
+     */
     private String address;
+
+    /**
+     * Дополнительная информация о приюте
+     */
     private String info;
+
+    /**
+     * Карта, как добраться до приюта
+     */
     private byte[] map;
 
     public Shelter() {
     }
 
-    public Shelter(String nameShelter, String address, String info, byte[] map) {
-        this.nameShelter = nameShelter;
-        this.address = address;
-        this.info = info;
-        this.map = map;
+    public Shelter(Long id1, String name1, String address1, String shelterSchedule1, String securityInfo1, String info1, byte[] map1) {
     }
 
     public Long getId() {
@@ -32,11 +50,11 @@ public class Shelter {
     }
 
     public String getName() {
-        return nameShelter;
+        return name;
     }
 
     public void setName(String name) {
-        this.nameShelter = nameShelter;
+        this.name = name;
     }
 
     public String getAddress() {
@@ -68,12 +86,12 @@ public class Shelter {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Shelter shelter = (Shelter) o;
-        return Objects.equals(id, shelter.id) && Objects.equals(nameShelter, shelter.nameShelter) && Objects.equals(address, shelter.address) && Objects.equals(info, shelter.info) && Arrays.equals(map, shelter.map);
+        return Objects.equals(id, shelter.id) && Objects.equals(name, shelter.name) && Objects.equals(address, shelter.address) && Objects.equals(info, shelter.info) && Arrays.equals(map, shelter.map);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, nameShelter, address, info);
+        int result = Objects.hash(id, name, address, info);
         result = 31 * result + Arrays.hashCode(map);
         return result;
     }

@@ -1,39 +1,51 @@
 package pro.sky.telegrambot.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Objects;
 
-@Entity
-public class Customer {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String nameCustomer;
+
+/**
+ * Класс с данными о владельце животного
+ */@Entity
+public class Customer {/**
+ * идентификатор записи, primary key
+ */
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;
+
+    /**
+     * имя хозяина животного
+     */
+    private String name;
+
+    /**
+     * идентификатор чата хозяина животного в Telegram
+     */
     private String chatId;
+
+    /**
+     * номер телефона хозяина животного
+     */
     private String phoneNumber;
 
-    public Customer() {
+    public Customer(Long id1, String name1, Long chatId1, String phoneNumber1) {
     }
 
-    public Customer(String nameCustomer, String chatId, String phoneNumber) {
-        this.nameCustomer = nameCustomer;
-        this.chatId = chatId;
-        this.phoneNumber = phoneNumber;
+    public Customer() {
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getNameCustomer() {
-        return nameCustomer;
+
+    public String getName() {
+        return name;
     }
 
-    public void setNameCustomer(String name) {
-        this.nameCustomer = nameCustomer;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getChatId() {
@@ -55,13 +67,13 @@ public class Customer {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Customer)) return false;
         Customer customer = (Customer) o;
-        return Objects.equals(id, customer.id) && Objects.equals(nameCustomer, customer.nameCustomer) && Objects.equals(chatId, customer.chatId) && Objects.equals(phoneNumber, customer.phoneNumber);
+        return Objects.equals(getId(), customer.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nameCustomer, chatId, phoneNumber);
+        return Objects.hash(getId());
     }
 }

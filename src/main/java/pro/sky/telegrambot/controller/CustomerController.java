@@ -1,13 +1,11 @@
 package pro.sky.telegrambot.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,116 +15,147 @@ import pro.sky.telegrambot.service.CustomerService;
 import java.util.List;
 
 /**
- * Контроллер сервиса клиентов.
+ * Класс для обработки запросов от клиента и возвращения результатов,
+ * работает с сущностью {@link CustomerService}.
  */
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
+
     private final CustomerService customerService;
-    private final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
 
-    /**
-     * Эндпоинт для добавления клиента.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Добавление нового клиента",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+    @Operation(
+            summary = "Создание владельца животного",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Данные создаваемого владельца животного." +
+                            "id переданный в теле будет игнорироваться, будет присвоен следующий id из БД. " +
+                            "Все поля кроме id обязательны.",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = Customer.class)
                     )
-            )
-    })
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Данные созданного владельца животного",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Customer.class)
+                            )
+
+                    )
+            }
+    )
     @PostMapping
-    public Customer createCustomer(@Parameter(description = "Все параметры добавляемого клиента") @RequestBody Customer customer) {
-        logger.info("Клиент добавлен");
-        return customerService.createCustomer(customer);
+    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
+
+        Customer createdCustomer = customerService.createCustomer(customer);
+        return ResponseEntity.ok(createdCustomer);
     }
 
-    /**
-     * Эндпоинт для поиска клиента.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Получение информации о клиенте по ID",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Customer.class)
+    @Operation(
+            summary = "Поиск владельца животного по id.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Информация о найденном владельце животного",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Customer.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "владелец животного с данным id не найден"
                     )
-            )
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<Customer> findCustomerById(@Parameter(description = "ID клиента") @PathVariable Long id) {
-        Customer customer = customerService.findCustomerById(id);
+            }
+    )
+    @GetMapping("{customerId}")
+    public ResponseEntity<Customer> findСustomer(
+            @Parameter(description = "Идентификатор владельца животного", example = "1")
+            @PathVariable long customerId) {
+
+        Customer customer = customerService.findCustomerById(customerId);
         if (customer == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.notFound().build();
         }
-        logger.info("Клиент найден");
         return ResponseEntity.ok(customer);
     }
 
-    /**
-     * Эндпоинт для получения клиента.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Изменение данных клиента",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+    @Operation(
+            summary = "Изменение данных владельца животного.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Данные о владельце животного с изменениями. Все поля обязательны.",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = Customer.class)
                     )
-            )
-    })
-    @PutMapping("/updateCustomer/{id}")
-    public ResponseEntity<Customer> updateCustomer(@Parameter(description = "ID изменяемого клиента") @PathVariable Long id,
-                                                   @Parameter(description = "Новые параметры клиента") @RequestBody Customer customer) {
-        Customer updateCustomer = customerService.updateCustomer(id, customer);
-        if (updateCustomer == null) {
-            return ResponseEntity.badRequest().build();
-        } else {
-            logger.info("Данные клиента обновлены");
-            return ResponseEntity.ok(updateCustomer);
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Измененные данные о владельце животного",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Customer.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Владелец животного с данным id не найден"
+                    )
+            }
+    )
+    @PutMapping
+    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer) {
+
+        Customer updatedCustomer = customerService.updateCustomer(customer);
+        if (updatedCustomer == null) {
+            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.ok(updatedCustomer);
     }
 
-    /**
-     * Эндпоинт для удаления клиента.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Удаление клиента",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Customer.class)
+    @Operation(
+            summary = "Удаление владельца животного по id.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Владелец животного успешно удален"
                     )
-            )
-    })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Customer> deleteCustomer(@Parameter(description = "ID удаляемого клиента") @PathVariable Long id) {
-        customerService.deleteCustomer(id);
-        logger.info("Клиент удален");
+            }
+    )
+    @DeleteMapping("{customerId}")
+    public ResponseEntity<Customer> deleteCustomer(
+            @Parameter(description = "id удаляемого владельца животного")
+            @PathVariable long customerId) {
+
+        customerService.deleteCustomer(customerId);
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * Эндпоинт для вывода всех клиентов.
-     */
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Список всех клиентов",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Customer.class)
+    @Operation(
+            summary = "Получить список всех владельцев животных",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Список всех владельцев животных",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    array = @ArraySchema(schema = @Schema(implementation = Customer.class))
+                            )
                     )
-            )
-    })
-    @GetMapping
-    public List<Customer> allCustomers() {
-        logger.info("Список всех клиентов");
-        return customerService.findAllCustomers();
+            }
+    )
+    @GetMapping("/all")
+    public ResponseEntity<List<Customer>> findAllCustomers() {
+        return ResponseEntity.ok(customerService.findAllCustomers());
     }
+
+
 }

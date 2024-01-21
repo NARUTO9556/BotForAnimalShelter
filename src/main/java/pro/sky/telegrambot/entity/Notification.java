@@ -7,6 +7,9 @@ import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Класс, описывающий параметры сообщений (Notification), которые телеграм-бот отправляет пользователю
+ */
 @Entity
 public class Notification {
     @Id

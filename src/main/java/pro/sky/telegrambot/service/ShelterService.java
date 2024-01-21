@@ -8,7 +8,7 @@ import java.util.List;
 public interface ShelterService {
     Shelter createShelter(Shelter shelter);
     Shelter findShelterById(long id);
-    Shelter updateShelter(Long id, Shelter updatedShelter);
+    Shelter updateShelter(Shelter updatedShelter);
     void deleteShelter(long id);
     List<Shelter> findAllShelters();
 }
