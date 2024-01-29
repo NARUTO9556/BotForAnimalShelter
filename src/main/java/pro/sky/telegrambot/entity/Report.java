@@ -24,7 +24,7 @@ public class Report {
     public Report() {
     }
 
-    public Report(Long chatId, String textReport, LocalDateTime dateTime, String filePath, Long fileSize, String mediaType, byte[] photo, Pet pet) {
+    public Report(Long chatId, String textReport, LocalDateTime dateReport, String filePath, Long fileSize, String mediaType, byte[] photo, Pet pet) {
         this.chatId = chatId;
         this.textReport = textReport;
         this.dateReport = dateReport;
@@ -55,11 +55,11 @@ public class Report {
         this.textReport = textReport;
     }
 
-    public LocalDateTime getDateTime() {
+    public LocalDateTime getDateReport() {
         return dateReport;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateReport(LocalDateTime dateReport) {
         this.dateReport = dateReport;
     }
 

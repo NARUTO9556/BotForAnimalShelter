@@ -8,7 +8,7 @@ import java.util.List;
 public interface ReportService {
     Report createReport(Report report);
     Report findReportById(long id);
-    Report updateReport(Report updatedReport);
-    void deleteCustomer(long id);
+    Report updateReport(Long id, Report updatedReport);
+    void deleteReport(long id);
     List<Report> findAllReports();
 }
